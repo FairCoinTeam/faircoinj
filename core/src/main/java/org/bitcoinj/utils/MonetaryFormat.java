@@ -47,19 +47,19 @@ import org.bitcoinj.core.Monetary;
 public final class MonetaryFormat {
 
     /** Standard format for the BTC denomination. */
-    public static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(2).repeatOptionalDecimals(2, 3);
+    public static final MonetaryFormat BTC = new MonetaryFormat().shift(0).minDecimals(2).repeatOptionalDecimals(2, 2);
     /** Standard format for the mBTC denomination. */
-    public static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).optionalDecimals(2);
+    public static final MonetaryFormat MBTC = new MonetaryFormat().shift(3).minDecimals(2).optionalDecimals(1);
     /** Standard format for the µBTC denomination. */
-    public static final MonetaryFormat UBTC = new MonetaryFormat().shift(6).minDecimals(0).optionalDecimals(2);
+    public static final MonetaryFormat UBTC = new MonetaryFormat().shift(6).minDecimals(0);
     /** Standard format for fiat amounts. */
     public static final MonetaryFormat FIAT = new MonetaryFormat().shift(0).minDecimals(2).repeatOptionalDecimals(2, 1);
-    /** Currency code for base 1 Bitcoin. */
-    public static final String CODE_BTC = "BTC";
-    /** Currency code for base 1/1000 Bitcoin. */
-    public static final String CODE_MBTC = "mBTC";
-    /** Currency code for base 1/1000000 Bitcoin. */
-    public static final String CODE_UBTC = "µBTC";
+    /** Currency code for base 1 FairCoin. */
+    public static final String CODE_BTC = "FAIR";
+    /** Currency code for base 1/100 FairCoin. */
+    public static final String CODE_MBTC = "mFAIR";
+    /** Currency code for base 1/10000 FairCoin. */
+    public static final String CODE_UBTC = "µFAIR";
 
     private final char negativeSign;
     private final char positiveSign;

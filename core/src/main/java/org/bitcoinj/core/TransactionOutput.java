@@ -307,6 +307,10 @@ public class TransactionOutput extends ChildMessage implements Serializable {
         return scriptBytes;
     }
 
+    public boolean isEmpty() {
+        return (value == 0 && scriptBytes.length == 0);
+    }
+
     /**
      * Returns true if this output is to a key in the wallet or to an address/script we are watching.
      */

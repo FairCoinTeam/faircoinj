@@ -33,7 +33,7 @@ public final class Coin implements Monetary, Comparable<Coin>, Serializable {
      * Number of decimals for one Bitcoin. This constant is useful for quick adapting to other coins because a lot of
      * constants derive from it.
      */
-    public static final int SMALLEST_UNIT_EXPONENT = 8;
+    public static final int SMALLEST_UNIT_EXPONENT = 6;
 
     /**
      * The number of satoshis equal to one bitcoin.
@@ -222,7 +222,7 @@ public final class Coin implements Monetary, Comparable<Coin>, Serializable {
         return this.value;
     }
 
-    private static final MonetaryFormat FRIENDLY_FORMAT = MonetaryFormat.BTC.minDecimals(2).repeatOptionalDecimals(1, 6).postfixCode();
+    private static final MonetaryFormat FRIENDLY_FORMAT = MonetaryFormat.BTC.minDecimals(2).repeatOptionalDecimals(1, 4).postfixCode();
 
     /**
      * Returns the value as a 0.12 type string. More digits after the decimal place will be used
@@ -232,7 +232,7 @@ public final class Coin implements Monetary, Comparable<Coin>, Serializable {
         return FRIENDLY_FORMAT.format(this).toString();
     }
 
-    private static final MonetaryFormat PLAIN_FORMAT = MonetaryFormat.BTC.minDecimals(0).repeatOptionalDecimals(1, 8).noCode();
+    private static final MonetaryFormat PLAIN_FORMAT = MonetaryFormat.BTC.minDecimals(0).repeatOptionalDecimals(1, 6).noCode();
 
     /**
      * <p>

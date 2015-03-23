@@ -26,7 +26,9 @@ import org.bitcoinj.net.discovery.PeerDiscoveryException;
 import org.bitcoinj.net.NioClientManager;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.utils.BriefLogFormatter;
+
 import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -71,6 +73,7 @@ public class PrintPeers {
 
         ArrayList<InetAddress> addrs = new ArrayList<InetAddress>();
         for (InetSocketAddress peer : dnsPeers) addrs.add(peer.getAddress());
+        
         System.out.println("Scanning " + addrs.size() + " peers:");
 
         final NetworkParameters params = MainNetParams.get();
@@ -79,6 +82,8 @@ public class PrintPeers {
 
         List<ListenableFuture<Void>> futures = Lists.newArrayList();
         NioClientManager clientManager = new NioClientManager();
+        clientManager.startAsync();
+        
         for (final InetAddress addr : addrs) {
             InetSocketAddress address = new InetSocketAddress(addr, params.getPort());
             final Peer peer = new Peer(params, new VersionMessage(params, 0), null, new PeerAddress(address));
@@ -111,9 +116,11 @@ public class PrintPeers {
                 public void onPeerDisconnected(Peer p, int peerCount) {
                     if (!future.isDone())
                         System.out.println("Failed to talk to " + addr);
+                    System.out.println("D O N E .");
                     future.set(null);
                 }
             });
+            
             clientManager.openConnection(address, peer);
             futures.add(future);
         }

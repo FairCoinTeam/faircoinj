@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class FilteredBlock extends Message {
     /** The protocol version at which Bloom filtering started to be supported. */
-    public static final int MIN_PROTOCOL_VERSION = 70000;
+    public static final int MIN_PROTOCOL_VERSION = 90102;
     private Block header;
 
     private PartialMerkleTree merkleTree;

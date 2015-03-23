@@ -2528,7 +2528,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
             StringBuilder builder = new StringBuilder();
             Coin estimatedBalance = getBalance(BalanceType.ESTIMATED);
             Coin availableBalance = getBalance(BalanceType.AVAILABLE);
-            builder.append(String.format("Wallet containing %s BTC (available: %s BTC) in:%n",
+            builder.append(String.format("Wallet containing %s FAIR (available: %s FAIR) in:%n",
                     estimatedBalance.toPlainString(), availableBalance.toPlainString()));
             builder.append(String.format("  %d pending transactions%n", pending.size()));
             builder.append(String.format("  %d unspent transactions%n", unspent.size()));

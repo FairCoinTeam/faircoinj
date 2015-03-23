@@ -16,15 +16,19 @@
 
 package org.bitcoinj.core;
 
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -35,6 +39,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.bitcoinj.core.Block.Algo.ALGO_GROESTL;
+import static org.bitcoinj.core.Block.Algo.ALGO_SHA256D;
+import static org.bitcoinj.core.Block.BlockVersion.BLOCK_VERSION_ALGO;
 import static org.bitcoinj.core.Coin.FIFTY_COINS;
 import static org.bitcoinj.core.Utils.doubleDigest;
 import static org.bitcoinj.core.Utils.doubleDigestTwoBuffers;
@@ -74,6 +81,49 @@ public class Block extends Message {
     /** A value for difficultyTarget (nBits) that allows half of all possible hash solutions. Used in unit testing. */
     public static final long EASIEST_DIFFICULTY_TARGET = 0x207fFFFFL;
 
+    public enum Algo {
+    	ALGO_SHA256D,
+        ALGO_GROESTL,
+        NUM_ALGOS
+    }
+
+    public enum BlockVersion {
+    	// primary version
+    	BLOCK_VERSION_DEFAULT(4),
+    	
+    	// algo
+    	BLOCK_VERSION_ALGO(7 << 9),
+    	BLOCK_VERSION_SHA256D(0 << 9),
+    	BLOCK_VERSION_GROESTL(1 << 9);
+    	
+        private int version;
+        
+    	private BlockVersion(int version) {
+        	this.version = version;
+        }
+    	
+    	public int getVersion() {
+    		return version;
+		}
+    }
+
+    public Algo getAlgo() {
+        switch ((int)getVersion() & BLOCK_VERSION_ALGO.getVersion()) {
+            case 0:
+                return ALGO_SHA256D;
+            case 1 << 9:
+                return ALGO_GROESTL;
+        }
+    	return ALGO_SHA256D;
+    }
+
+    public boolean isProofOfStake() {
+    	if (transactions == null) // could happen with orphan blocks
+    		return true;
+    		
+    	return (transactions.size() > 1 && transactions.get(1).isCoinStake());
+    }
+    
     // Fields defined as part of the protocol format.
     private long version;
     private Sha256Hash prevBlockHash;
@@ -168,7 +218,19 @@ public class Block extends Message {
      * </p>
      */
     public Coin getBlockInflation(int height) {
-        return FIFTY_COINS.shiftRight(height / params.getSubsidyDecreaseBlockCount());
+    	if (height > 101) // after block 101 pre-mine is complete (50,000,000 coins)
+			return Coin.MILLICOIN; // 0.001 FAIR
+		else if (height == 0) // if we are called with nHeight of zero
+			return Coin.MILLICOIN; // 0.001 FAIR
+		else if (height == 1)
+			return Coin.COIN.multiply(50);
+		else if (height == 2)
+			return Coin.COIN.multiply(499950);
+		else if (height < 102)
+			return Coin.COIN.multiply(500000);
+    	
+    	// never reached
+		return Coin.MILLICOIN;
     }
 
     private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
@@ -650,9 +712,12 @@ public class Block extends Message {
         //
         // To prevent this attack from being possible, elsewhere we check that the difficultyTarget
         // field is of the right value. This requires us to have the preceeding blocks.
+    	if (true) // TODO: thokon00: check disabled for now
+        	return true;
+    	
         BigInteger target = getDifficultyTargetAsInteger();
 
-        BigInteger h = getHash().toBigInteger();
+        BigInteger h = MainNetParams.calculateBlockPoWHash(this).toBigInteger();
         if (h.compareTo(target) > 0) {
             // Proof of work check failed!
             if (throwException)
@@ -874,6 +939,10 @@ public class Block extends Message {
         maybeParseHeader();
         return version;
     }
+    
+    public void setVersion(long version) {
+		this.version = version;
+	}
 
     /**
      * Returns the hash of the previous block in the chain, as defined by the block header.

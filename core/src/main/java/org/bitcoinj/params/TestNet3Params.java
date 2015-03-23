@@ -28,31 +28,29 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class TestNet3Params extends NetworkParameters {
     public TestNet3Params() {
-        super();
+        super("04e6951f77356e7998fa968caedfc0aab07e3bb733a85a33930812d6aa23d8b518e3bda6033079934381527b99cda27ae2584e3a9e4f7c48b51bc7641c0cb9a1d5");
         id = ID_TESTNET;
         // Genesis hash is 000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943
         packetMagic = 0x0b110907;
         interval = INTERVAL;
         targetTimespan = TARGET_TIMESPAN;
         maxTarget = Utils.decodeCompactBits(0x1d00ffffL);
-        port = 18333;
+        port = 18392;
         addressHeader = 111;
         p2shHeader = 196;
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
         dumpedPrivateKeyHeader = 239;
-        genesisBlock.setTime(1296688602L);
-        genesisBlock.setDifficultyTarget(0x1d00ffffL);
-        genesisBlock.setNonce(414098458);
+        genesisBlock.setTime(1389138974l);
+        genesisBlock.setDifficultyTarget(0x1e0fffffl);
+        genesisBlock.setNonce(280528);
         spendableCoinbaseDepth = 100;
         subsidyDecreaseBlockCount = 210000;
         String genesisHash = genesisBlock.getHashAsString();
-        checkState(genesisHash.equals("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"));
-        alertSigningKey = Utils.HEX.decode("04302390343f91cc401d56d68b123028bf52e5fca1939df127f63c6467cdf9c8e2c14b61104cf817d0b780da337893ecc4aaff1309e536162dabbdb45200ca2b0a");
+        checkState(genesisHash.equals("5df7281a262d9a6251e65d12bdb78c6a69041c7d28e209df2a7719059de3088c"));
+        alertSigningKey = Utils.HEX.decode("045894f38e9dd72b6f210c261d40003eb087030c42b102d3b238b396256d02f5a380ff3b7444d306d9e118fa1fc7b2b7594875f4eb64bbeaa31577391d85eb5a8a");
 
         dnsSeeds = new String[] {
-                "testnet-seed.alexykot.me",           // Alex Kotenko
-                "testnet-seed.bitcoin.schildbach.de", // Andreas Schildbach
-                "testnet-seed.bitcoin.petertodd.org"  // Peter Todd
+                "seed1.fair-coin.org"
         };
     }
 

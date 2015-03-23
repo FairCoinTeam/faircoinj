@@ -27,24 +27,24 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class TestNet2Params extends NetworkParameters {
     public TestNet2Params() {
-        super();
+        super("04e6951f77356e7998fa968caedfc0aab07e3bb733a85a33930812d6aa23d8b518e3bda6033079934381527b99cda27ae2584e3a9e4f7c48b51bc7641c0cb9a1d5");
         id = ID_TESTNET;
         packetMagic = 0xfabfb5daL;
-        port = 18333;
+        port = 18392;
         addressHeader = 111;
         p2shHeader = 196;
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
         interval = INTERVAL;
         targetTimespan = TARGET_TIMESPAN;
-        maxTarget = Utils.decodeCompactBits(0x1d0fffffL);
+        maxTarget = Utils.decodeCompactBits(0x1e0fffffl);
         dumpedPrivateKeyHeader = 239;
-        genesisBlock.setTime(1296688602L);
-        genesisBlock.setDifficultyTarget(0x1d07fff8L);
-        genesisBlock.setNonce(384568319);
+        genesisBlock.setTime(1389138974l);
+        genesisBlock.setDifficultyTarget(0x1e0fffffl);
+        genesisBlock.setNonce(280528);
         spendableCoinbaseDepth = 100;
         subsidyDecreaseBlockCount = 210000;
         String genesisHash = genesisBlock.getHashAsString();
-        checkState(genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008"));
+        checkState(genesisHash.equals("5df7281a262d9a6251e65d12bdb78c6a69041c7d28e209df2a7719059de3088c"));
         dnsSeeds = null;
     }
 

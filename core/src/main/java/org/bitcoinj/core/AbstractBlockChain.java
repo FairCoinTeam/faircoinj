@@ -839,6 +839,9 @@ public abstract class AbstractBlockChain {
      * Throws an exception if the blocks difficulty is not correct.
      */
     private void checkDifficultyTransitions(StoredBlock storedPrev, Block nextBlock) throws BlockStoreException, VerificationException {
+        if (storedPrev != null) // TODO: thokon00: to implement
+            return;
+        
         checkState(lock.isHeldByCurrentThread());
         Block prev = storedPrev.getHeader();
         

@@ -103,6 +103,7 @@ public class Transaction extends ChildMessage implements Serializable {
 
     // These are serialized in both bitcoin and java serialization.
     private long version;
+    private long time;
     private ArrayList<TransactionInput> inputs;
     private ArrayList<TransactionOutput> outputs;
 
@@ -174,6 +175,7 @@ public class Transaction extends ChildMessage implements Serializable {
     public Transaction(NetworkParameters params) {
         super(params);
         version = 1;
+        time = System.currentTimeMillis() / 1000;
         inputs = new ArrayList<TransactionInput>();
         outputs = new ArrayList<TransactionOutput>();
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
@@ -555,7 +557,8 @@ public class Transaction extends ChildMessage implements Serializable {
         cursor = offset;
 
         version = readUint32();
-        optimalEncodingMessageSize = 4;
+        time = readUint32();
+        optimalEncodingMessageSize = 8;
 
         // First come the inputs.
         long numInputs = readVarInt();
@@ -605,6 +608,11 @@ public class Transaction extends ChildMessage implements Serializable {
         return inputs.size() == 1 && inputs.get(0).isCoinBase();
     }
 
+    public boolean isCoinStake() {
+        maybeParse();
+        return inputs.size() > 0 && (!inputs.get(0).isCoinBase()) && outputs.size() >= 2 && outputs.get(0).isEmpty();
+    }
+    
     /**
      * A transaction is mature if it is either a building coinbase tx that is as deep or deeper than the required coinbase depth, or a non-coinbase tx.
      */
@@ -1037,6 +1045,7 @@ public class Transaction extends ChildMessage implements Serializable {
     @Override
     protected void bitcoinSerializeToStream(OutputStream stream) throws IOException {
         uint32ToByteStreamLE(version, stream);
+        uint32ToByteStreamLE(time, stream);
         stream.write(new VarInt(inputs.size()).encode());
         for (TransactionInput in : inputs)
             in.bitcoinSerialize(stream);
@@ -1070,6 +1079,11 @@ public class Transaction extends ChildMessage implements Serializable {
         this.lockTime = lockTime;
     }
 
+    public void setTime(long time) {
+        unCache();
+        this.time = time;
+    }
+    
     /**
      * @return the version
      */
@@ -1077,6 +1091,10 @@ public class Transaction extends ChildMessage implements Serializable {
         maybeParse();
         return version;
     }
+    
+    public long getTime() {
+		return time;
+	}
 
     /** Returns an unmodifiable view of all inputs. */
     public List<TransactionInput> getInputs() {

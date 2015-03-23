@@ -18,6 +18,7 @@
 package org.bitcoinj.examples;
 
 import org.bitcoinj.core.*;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.MemoryBlockStore;
@@ -33,7 +34,7 @@ public class FetchBlock {
     public static void main(String[] args) throws Exception {
         BriefLogFormatter.init();
         System.out.println("Connecting to node");
-        final NetworkParameters params = TestNet3Params.get();
+        final NetworkParameters params = MainNetParams.get();
 
         BlockStore blockStore = new MemoryBlockStore(params);
         BlockChain chain = new BlockChain(params, blockStore);
@@ -45,7 +46,7 @@ public class FetchBlock {
         peerGroup.waitForPeers(1).get();
         Peer peer = peerGroup.getConnectedPeers().get(0);
 
-        Sha256Hash blockHash = new Sha256Hash(args[0]);
+        Sha256Hash blockHash = new Sha256Hash("db66cdb132026b2794669f3e3bd2724a2fb77899ad659be0c329f8d25fb68dbe");
         Future<Block> future = peer.getBlock(blockHash);
         System.out.println("Waiting for node to send us the requested block: " + blockHash);
         Block block = future.get();

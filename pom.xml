@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.bitcoinj</groupId>
-  <artifactId>bitcoinj-parent</artifactId>
+  <artifactId>faircoinj-parent</artifactId>
   <version>0.12.2</version>
   <packaging>pom</packaging>
 
@@ -20,14 +20,14 @@
   </parent>
 
   <scm>
-    <connection>scm:git:https://github.com/bitcoinj/bitcoinj</connection>
-    <developerConnection>scm:git:https://github.com/bitcoinj/bitcoinj</developerConnection>
+    <connection>scm:git:https://github.com/FairCoinTeam/faircoinj</connection>
+    <developerConnection>scm:git:https://github.com/FairCoinTeam/faircoinj</developerConnection>
     <url>scm:git:https://github.com/bitcoinj/bitcoinj</url>
   </scm>
 
-  <name>bitcoinj Parent</name>
-  <description>Provides the common configuration for the BitCoinJ modules</description>
-  <url>http://www.bitcoinj.org/</url>
+  <name>faircoinj Parent</name>
+  <description>Provides the common configuration for the FairCoinJ modules</description>
+  <url>http://fair-coin.org/</url>
 
   <licenses>
     <license>

@@ -16,56 +16,81 @@
 
 package org.bitcoinj.params;
 
+import org.bitcoinj.core.Block;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.Utils;
+import org.faircoin.Groestl512;
 
 import static com.google.common.base.Preconditions.checkState;
+import static org.bitcoinj.core.Utils.doubleDigest;
+import static org.bitcoinj.core.Utils.singleDigest;
 
 /**
  * Parameters for the main production network on which people trade goods and services.
  */
 public class MainNetParams extends NetworkParameters {
     public MainNetParams() {
-        super();
+        super("04b81f9a8d519834e3e35d46c6a3526ec317408a256f54f54cf54ffe8514ce702b705129a53a63f90af8796bb4a2633ffde7522b900f4ce253db92b7a2c799cfab");
+        
         interval = INTERVAL;
         targetTimespan = TARGET_TIMESPAN;
-        maxTarget = Utils.decodeCompactBits(0x1d00ffffL);
-        dumpedPrivateKeyHeader = 128;
-        addressHeader = 0;
-        p2shHeader = 5;
+        maxTarget = Utils.decodeCompactBits(0x1e0fffffL);
+        dumpedPrivateKeyHeader = 223;
+        addressHeader = 95;
+        p2shHeader = 36;
         acceptableAddressCodes = new int[] { addressHeader, p2shHeader };
-        port = 8333;
-        packetMagic = 0xf9beb4d9L;
-        genesisBlock.setDifficultyTarget(0x1d00ffffL);
-        genesisBlock.setTime(1231006505L);
-        genesisBlock.setNonce(2083236893);
+        port = 46392;
+        packetMagic = 0xe4e8e9e5l;
+        genesisBlock.setDifficultyTarget(0x1e0fffffl);
+        genesisBlock.setTime(1389138974l);
+        genesisBlock.setNonce(102078l);
         id = ID_MAINNET;
         subsidyDecreaseBlockCount = 210000;
         spendableCoinbaseDepth = 100;
         String genesisHash = genesisBlock.getHashAsString();
-        checkState(genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"),
+        checkState(genesisHash.equals("f1ae188b0c08e296e45980f9913f6ad2304ff02d5293538275bacdbcb05ef275"),
                 genesisHash);
 
         // This contains (at a minimum) the blocks which are not BIP30 compliant. BIP30 changed how duplicate
         // transactions are handled. Duplicated transactions could occur in the case where a coinbase had the same
         // extraNonce and the same outputs but appeared at different heights, and greatly complicated re-org handling.
         // Having these here simplifies block connection logic considerably.
-        checkpoints.put(91722, new Sha256Hash("00000000000271a2dc26e7667f8419f2e15416dc6955e5a6c6cdf3f2574dd08e"));
-        checkpoints.put(91812, new Sha256Hash("00000000000af0aed4792b1acee3d966af36cf5def14935db8de83d6f9306f2f"));
-        checkpoints.put(91842, new Sha256Hash("00000000000a4d0a398161ffc163c503763b1f4360639393e0e4c8e300e0caec"));
-        checkpoints.put(91880, new Sha256Hash("00000000000743f190a18c5577a3c2d2a1f610ae9601ac046a38084ccb7cd721"));
-        checkpoints.put(200000, new Sha256Hash("000000000000034a7dedef4a161fa058a2d67a173a90155f3a2fe6fc132e0ebf"));
+        checkpoints.put( 40000, new Sha256Hash("5346de84305836f881fb15a884088286bf23d3361e8e1e9d0b58916c46817801"));
+        checkpoints.put( 80000, new Sha256Hash("f6f8b3d1334057117fddc385dabfbc3bce3826e170985c804af914db99a1f7f6"));
+        checkpoints.put( 94614, new Sha256Hash("31d3eef28d9c6c1a15d7b12571d93ab563cbd661f06a2d47d2fb0323e6fca1aa"));
 
         dnsSeeds = new String[] {
-                "seed.bitcoin.sipa.be",        // Pieter Wuille
-                "dnsseed.bluematt.me",         // Matt Corallo
-                "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
-                "seed.bitcoinstats.com",       // Chris Decker
-                "seed.bitnodes.io",            // Addy Yeow
+                "seed1.fair-coin.org","seed2.fair-coin.org",
         };
     }
 
+	public static Sha256Hash calculateBlockPoWHash(Block b) {
+        byte[] blockHeader = b.cloneAsHeader().bitcoinSerialize();
+        
+        try {
+			switch (b.getAlgo()) {
+			    default:
+			    case ALGO_SHA256D:
+			    	return new Sha256Hash(Utils.reverseBytes(doubleDigest(blockHeader)));
+			    case ALGO_GROESTL:
+			    	return calculateGroestlHash(blockHeader);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return b.getHash();
+		}
+    }
+
+	private static final Groestl512 groestl = new Groestl512();
+	
+	public static Sha256Hash calculateGroestlHash(byte[] bytes) throws Exception {
+		groestl.reset();
+		byte[] test = groestl.digest(bytes);
+    	
+        return new Sha256Hash(Utils.reverseBytes(singleDigest(test, 0, test.length)));
+    }
+	
     private static MainNetParams instance;
     public static synchronized MainNetParams get() {
         if (instance == null) {
