@@ -344,7 +344,7 @@ public final class MonetaryFormat {
         long decimals = satoshis % shiftDivisor;
 
         // formatting
-        String decimalsStr = String.format(Locale.US, "%0" + (monetary.smallestUnitExponent() - shift) + "d", decimals);
+        String decimalsStr = shift == 6 ? "" : String.format(Locale.US, "%0" + (monetary.smallestUnitExponent() - shift) + "d", decimals);
         StringBuilder str = new StringBuilder(decimalsStr);
         while (str.length() > minDecimals && str.charAt(str.length() - 1) == '0')
             str.setLength(str.length() - 1); // trim trailing zero

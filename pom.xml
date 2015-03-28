@@ -22,7 +22,7 @@
   <scm>
     <connection>scm:git:https://github.com/FairCoinTeam/faircoinj</connection>
     <developerConnection>scm:git:https://github.com/FairCoinTeam/faircoinj</developerConnection>
-    <url>scm:git:https://github.com/bitcoinj/bitcoinj</url>
+    <url>scm:git:https://github.com/FairCoinTeam/faircoinj</url>
   </scm>
 
   <name>faircoinj Parent</name>
