@@ -73,6 +73,7 @@ public class BitcoinSerializer {
         names.put(RejectMessage.class, "reject");
         names.put(GetUTXOsMessage.class, "getutxos");
         names.put(UTXOsMessage.class, "utxos");
+        names.put(CheckpointMessage.class, "checkpoint");
     }
 
     /**
@@ -228,6 +229,8 @@ public class BitcoinSerializer {
             return new HeadersMessage(params, payloadBytes);
         } else if (command.equals("alert")) {
             return new AlertMessage(params, payloadBytes);
+        } else if (command.equals("checkpoint")) {
+            return new CheckpointMessage(params, payloadBytes);
         } else if (command.equals("filterload")) {
             return new BloomFilter(params, payloadBytes);
         } else if (command.equals("notfound")) {

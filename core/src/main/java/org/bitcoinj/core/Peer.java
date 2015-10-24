@@ -16,10 +16,33 @@
 
 package org.bitcoinj.core;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.annotation.Nullable;
+
+import net.jcip.annotations.GuardedBy;
+
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.utils.ListenerRegistration;
 import org.bitcoinj.utils.Threading;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -27,20 +50,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import net.jcip.annotations.GuardedBy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * <p>A Peer handles the high level communication with a Bitcoin node, extending a {@link PeerSocketHandler} which
@@ -363,6 +372,8 @@ public class Peer extends PeerSocketHandler {
             processHeaders((HeadersMessage) m);
         } else if (m instanceof AlertMessage) {
             processAlert((AlertMessage) m);
+        } else if (m instanceof CheckpointMessage) {
+            processCheckpoint((CheckpointMessage) m);
         } else if (m instanceof VersionMessage) {
             processVersionMessage((VersionMessage) m);
         } else if (m instanceof VersionAck) {
@@ -468,7 +479,7 @@ public class Peer extends PeerSocketHandler {
     private void processAlert(AlertMessage m) {
         try {
             if (m.isSignatureValid()) {
-                log.info("Received alert from peer {}: {}", toString(), m.getStatusBar());
+                log.info("Received alert from peer {}: {}", toString(), m.toString());
             } else {
                 log.warn("Received alert with invalid signature from peer {}: {}", toString(), m.getStatusBar());
             }
@@ -477,6 +488,20 @@ public class Peer extends PeerSocketHandler {
             // BigInteger implementations! See issue 160 for discussion. As alerts are just optional and not that
             // useful, we just swallow the error here.
             log.error("Failed to check signature: bug in platform libraries?", t);
+        }
+    }
+
+    private void processCheckpoint(CheckpointMessage m) {
+        try {
+            if (m.isSignatureValid()) {
+                log.info("Received checkpoint from peer {}: {}", toString(), m.getCheckpointHash());
+            } else {
+                log.warn("Received checkpoint with invalid signature from peer {}: {}", toString(), m.getCheckpointHash());
+            }
+        } catch (Throwable t) {
+            // Signature checking can FAIL on Android platforms before Gingerbread apparently due to bugs in their
+            // BigInteger implementations! See issue 160 for discussion. We just swallow the error here.
+            log.error("Failed to check signature on checkpoint: bug in platform libraries?", t);
         }
     }
 

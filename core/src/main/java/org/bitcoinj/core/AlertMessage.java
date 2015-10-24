@@ -35,6 +35,8 @@ import java.util.Set;
  * Before doing anything with an alert, you should check {@link AlertMessage#isSignatureValid()}.
  */
 public class AlertMessage extends Message {
+    private static final long serialVersionUID = -4910061987874295862L;
+
     private byte[] content;
     private byte[] signature;
 
@@ -59,7 +61,7 @@ public class AlertMessage extends Message {
 
     @Override
     public String toString() {
-        return "ALERT: " + getStatusBar();
+        return "ALERT: " + getStatusBar() + ", expiration: " + getExpiration() + ", subVer: " + matchingSubVers;
     }
 
     @Override
