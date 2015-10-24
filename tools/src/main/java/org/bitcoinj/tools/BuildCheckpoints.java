@@ -143,15 +143,19 @@ public class BuildCheckpoints {
         checkState(manager.numCheckpoints() == expectedSize);
 
         if (PARAMS.getId().equals(NetworkParameters.ID_MAINNET)) {
-            StoredBlock test = manager.getCheckpointBefore(1390500000); // Thu Jan 23 19:00:00 CET 2014
-            checkState(test.getHeight() == 280224);
-            checkState(test.getHeader().getHashAsString()
-                    .equals("00000000000000000b5d59a15f831e1c45cb688a4db6b0a60054d49a9997fa34"));
-        } else if (PARAMS.getId().equals(NetworkParameters.ID_TESTNET)) {
-            StoredBlock test = manager.getCheckpointBefore(1390500000); // Thu Jan 23 19:00:00 CET 2014
+            StoredBlock test = manager.getCheckpointBefore(1445619600); // Sat Oct 23 19:00:00 CET 2015
+            System.out.println(test.getHeight());
+            System.out.println(test.getHeader().getHashAsString());
+            
             checkState(test.getHeight() == 167328);
             checkState(test.getHeader().getHashAsString()
-                    .equals("0000000000035ae7d5025c2538067fe7adb1cf5d5d9c31b024137d9090ed13a9"));
+                    .equals("9fa9837d14ada1f85e5dba7783c4c1731d816b1987c9d316a9626f9cf0735cb1"));
+        } else if (PARAMS.getId().equals(NetworkParameters.ID_TESTNET)) {
+            // TODO
+        	StoredBlock test = manager.getCheckpointBefore(1445619600); // Sat Oct 23 19:00:00 CET 2015
+            checkState(test.getHeight() == 9999999);
+            checkState(test.getHeader().getHashAsString()
+                    .equals("0000000000000000000000000000000000000000000000000000000000000001"));
         }
     }
 }
